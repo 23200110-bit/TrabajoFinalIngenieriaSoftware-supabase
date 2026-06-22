@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar Paciente | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+  <link rel="stylesheet" href="admision.css" />
+  <style>
+    /* Estilo para que los campos congelados se vean limpios y no editables */
+    .campo-bloqueado {
+      background-color: #f4f6f9 !important;
+      color: #495057 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Registrar Paciente</h1>
+          <p>Registra un paciente mediante DNI y valida la vigencia de su seguro (CU-01)</p>
+        </div>
+
+        <div id="mensaje-admision" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🔎 Paso 1: Buscar DNI</div>
+          <div class="fila-campos" style="align-items:end;">
+            <div class="campo-grupo" style="margin-bottom:0;">
+              <label for="campo-dni">DNI del paciente</label>
+              <input type="text" id="campo-dni" maxlength="8" placeholder="Ej. 70512345" required />
+            </div>
+            <button type="button" id="btn-buscar-dni" class="btn btn-primario" style="height:42px;">
+              Validar DNI
+            </button>
+          </div>
+        </div>
+
+        <div id="seccion-datos-paciente" class="tarjeta" style="display:none;">
+          <div class="tarjeta-titulo">📝 Paso 2: Datos del paciente</div>
+
+          <form id="form-registrar-paciente">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-nombres">Nombres</label>
+                <input type="text" id="campo-nombres" class="campo-bloqueado" readonly required />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-apellidos">Apellidos</label>
+                <input type="text" id="campo-apellidos" class="campo-bloqueado" readonly required />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-fecha-nacimiento">Fecha de nacimiento</label>
+                <input type="text" id="campo-fecha-nacimiento" class="campo-bloqueado" readonly />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-sexo">Sexo</label>
+                <input type="text" id="campo-sexo" class="campo-bloqueado" readonly />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-telefono">Teléfono</label>
+                <input type="tel" id="campo-telefono" class="campo-bloqueado" readonly />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-direccion">Dirección</label>
+                <input type="text" id="campo-direccion" class="campo-bloqueado" readonly />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-tiene-seguro">¿Cuenta con seguro vigente?</label>
+                <input type="text" id="campo-tiene-seguro" class="campo-bloqueado" readonly />
+                <div id="alerta-seguro-contenedor" style="margin-top: 6px;"></div>
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-tipo-seguro">Tipo de seguro</label>
+                <input type="text" id="campo-tipo-seguro" class="campo-bloqueado" readonly />
+              </div>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="campo-seguro-vigencia">Seguro vigente hasta</label>
+              <input type="text" id="campo-seguro-vigencia" class="campo-bloqueado" readonly />
+            </div>
+
+            <button type="submit" id="btn-registrar" class="btn btn-primario btn-block mt-16">
+              Registrar paciente
+            </button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="admision.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reportes de Producción | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Reportes de Producción</h1>
+          <p>Genera y exporta reportes por servicio o por profesional de salud (CU-08)</p>
+        </div>
+
+        <div id="mensaje-reporte" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📊 Configurar reporte</div>
+          <form id="form-generar-reporte">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="select-tipo-reporte">Tipo de reporte</label>
+                <select id="select-tipo-reporte" required>
+                  <option value="servicio">Por servicio (especialidad)</option>
+                  <option value="profesional">Por profesional de salud</option>
+                </select>
+              </div>
+              <div></div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-fecha-inicio">Desde</label>
+                <input type="date" id="campo-fecha-inicio" required />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-fecha-fin">Hasta</label>
+                <input type="date" id="campo-fecha-fin" required />
+              </div>
+            </div>
+
+            <button type="submit" id="btn-generar" class="btn btn-primario btn-block">
+              Generar reporte
+            </button>
+          </form>
+        </div>
+
+        <!-- 📋 Sección de Resultados y Datos Visuales -->
+        <div class="tarjeta">
+          <div class="flex-entre tarjeta-titulo">
+            <span>📋 Resultado de Atenciones</span>
+            <div id="acciones-exportar" class="flex-gap" style="display:none;">
+              <button id="btn-exportar-excel" class="btn btn-exito btn-sm">⬇ Exportar Excel</button>
+              <button id="btn-exportar-pdf" class="btn btn-secundario btn-sm">⬇ Exportar PDF</button>
+            </div>
+          </div>
+          
+          <div id="contenedor-resultado-reporte" style="margin-bottom: 25px;">
+            <div class="estado-vacio">Configura el reporte y presiona "Generar reporte".</div>
+          </div>
+
+          <!-- 📈 Bloque de Gráficos Estadísticos Interactivos -->
+          <div id="bloque-graficos" style="border-top: 1px solid var(--color-borde); padding-top: 20px; margin-top: 10px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+              
+              <div style="background: #fdfdfd; padding: 15px; border: 1px solid var(--color-borde); border-radius: 6px;">
+                <h3 style="font-size: 14px; text-align: center; margin-bottom: 15px; color: var(--color-primario);">
+                  📊 Volumen Total de Consultas
+                </h3>
+                <div style="position: relative; height: 220px; width: 100%;">
+                  <canvas id="chartBarras"></canvas>
+                </div>
+              </div>
+
+              <div style="background: #fdfdfd; padding: 15px; border: 1px solid var(--color-borde); border-radius: 6px;">
+                <h3 style="font-size: 14px; text-align: center; margin-bottom: 15px; color: var(--color-primario);">
+                  📈 Atenciones Completadas vs Pendientes
+                </h3>
+                <div style="position: relative; height: 220px; width: 100%;">
+                  <canvas id="chartDona"></canvas>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.1/dist/jspdf.plugin.autotable.min.js"></script>
+  
+  <!-- ⚡ LIBRERÍA DE GRÁFICOS INTEGRADA -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/reporteService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="reportes.js"></script>
+</body>
+</html>

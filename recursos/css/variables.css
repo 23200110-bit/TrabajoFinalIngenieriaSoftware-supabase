@@ -1,0 +1,41 @@
+/* ============================================================================
+   VARIABLES GLOBALES DE DISEÑO
+   Paleta institucional: azul (principal) + amarillo (acento/alertas) - RNF-06
+   ============================================================================ */
+
+:root {
+  /* Color principal - Azul institucional */
+  --color-primario: #1565C0;
+  --color-primario-oscuro: #0D47A1;
+  --color-primario-claro: #E3F2FD;
+
+  /* Color secundario - Amarillo (acciones clave / alertas) */
+  --color-acento: #FFC107;
+  --color-acento-oscuro: #FF8F00;
+  --color-acento-claro: #FFF8E1;
+
+  /* Estados */
+  --color-exito: #2E7D32;
+  --color-exito-fondo: #E8F5E9;
+  --color-error: #C62828;
+  --color-error-fondo: #FFEBEE;
+  --color-alerta: #EF6C00;
+  --color-alerta-fondo: #FFF3E0;
+
+  /* Neutros */
+  --color-texto: #1A1A1A;
+  --color-texto-suave: #5F6368;
+  --color-fondo: #F5F7FA;
+  --color-blanco: #FFFFFF;
+  --color-borde: #E0E4E8;
+
+  /* Tipografía */
+  --fuente-base: 'Segoe UI', Roboto, -apple-system, sans-serif;
+
+  /* Espaciados */
+  --radio-borde: 10px;
+  --radio-borde-chico: 6px;
+  --sombra-suave: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sombra-media: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --transicion: all 0.2s ease-in-out;
+}

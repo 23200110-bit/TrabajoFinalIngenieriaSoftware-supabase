@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crear cuenta | SDGP - Villa Victoria Porvenir</title>
+  <link rel="stylesheet" href="../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../recursos/css/global.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+
+  <div class="auth-pantalla">
+    <div class="auth-tarjeta">
+      <div class="auth-logo">
+        <div class="icono">+</div>
+        <h1>SDGP &mdash; Villa Victoria</h1>
+      </div>
+      <p class="auth-subtitulo">Crear cuenta de personal del centro de salud</p>
+
+      <div id="mensaje-registro" class="mensaje"></div>
+
+      <form id="form-registro" onsubmit="manejarRegistro(event)">
+        <div class="campo-grupo">
+          <label for="reg-nombre">Nombre completo</label>
+          <input type="text" id="reg-nombre" placeholder="Ej. María Pérez López" required />
+        </div>
+
+        <div class="fila-campos">
+          <div class="campo-grupo">
+            <label for="reg-dni">DNI</label>
+            <input type="text" id="reg-dni" maxlength="8" placeholder="12345678" required />
+          </div>
+          <div class="campo-grupo">
+            <label for="reg-rol">Rol</label>
+            <select id="reg-rol" onchange="alternarCampoEspecialidad()" required>
+              <option value="">Selecciona...</option>
+              <option value="admision">Admisión</option>
+              <option value="enfermeria">Enfermería</option>
+              <option value="medico">Médico</option>
+              <option value="farmacia">Farmacia</option>
+              <option value="administrador">Administrador</option>
+              <option value="encargado">Encargado del Centro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo-grupo" id="grupo-especialidad" style="display:none;">
+          <label for="reg-especialidad">Especialidad médica</label>
+          <input type="text" id="reg-especialidad" placeholder="Ej. Medicina General" />
+        </div>
+
+        <div class="campo-grupo">
+          <label for="reg-email">Correo institucional</label>
+          <input type="email" id="reg-email" placeholder="usuario@centrosalud.pe" required />
+        </div>
+
+        <div class="campo-grupo">
+          <label for="reg-password">Contraseña</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required />
+        </div>
+
+        <button type="submit" id="btn-registro" class="btn btn-primario btn-block">
+          Crear cuenta
+        </button>
+      </form>
+
+      <p class="auth-pie">
+        ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../recursos/js/supabase-config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

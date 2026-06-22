@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | SDGP - Villa Victoria Porvenir</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Dashboard de Indicadores</h1>
+          <p>Supervisión en tiempo real de la atención del centro de salud (HU-10, HU-11)</p>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="dashboard-kpi">
+            <div class="etiqueta">Citas de hoy</div>
+            <div class="valor" id="kpi-citas-hoy">0</div>
+          </div>
+          <div class="dashboard-kpi exito">
+            <div class="etiqueta">Atenciones completadas</div>
+            <div class="valor" id="kpi-completadas">0</div>
+          </div>
+          <div class="dashboard-kpi alerta">
+            <div class="etiqueta">Citas canceladas</div>
+            <div class="valor" id="kpi-canceladas">0</div>
+          </div>
+          <div class="dashboard-kpi acento">
+            <div class="etiqueta">Pacientes en espera</div>
+            <div class="valor" id="kpi-en-espera">0</div>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📊 Ocupación por especialidad y fecha</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Especialidad</th>
+                <th>Total de citas</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-ocupacion-body">
+              <tr><td colspan="4" class="estado-vacio">Cargando indicadores...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="layout.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

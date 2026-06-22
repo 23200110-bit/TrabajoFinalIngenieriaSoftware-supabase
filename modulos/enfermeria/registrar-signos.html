@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registrar Signos Vitales | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Registrar Signos Vitales</h1>
+          <p>Toma de signos y clasificación de prioridad (CU-03, HU-14)</p>
+        </div>
+
+        <div id="mensaje-enfermeria" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="flex-entre tarjeta-titulo">
+            <span>🧑‍⚕️ Paciente: <span id="nombre-paciente-signos">--</span></span>
+            <span id="prioridad-sugerida" class="badge badge-info">Sin clasificar</span>
+          </div>
+
+          <form id="form-signos-vitales">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-presion">Presión arterial</label>
+                <input type="text" id="campo-presion" placeholder="Ej. 120/80" required />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-temperatura">Temperatura (°C)</label>
+                <input type="number" step="0.1" id="campo-temperatura" placeholder="Ej. 36.5" required />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-peso">Peso (kg)</label>
+                <input type="number" step="0.1" id="campo-peso" placeholder="Ej. 68.5" required />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-talla">Talla (cm)</label>
+                <input type="number" step="0.1" id="campo-talla" placeholder="Ej. 165" required />
+              </div>
+            </div>
+
+            <div class="campo-grupo">
+              <label for="campo-motivo">Motivo de consulta</label>
+              <textarea id="campo-motivo" rows="3" placeholder="Describe brevemente el motivo..." required></textarea>
+            </div>
+
+            <input type="hidden" id="campo-prioridad" value="baja" />
+
+            <button type="submit" id="btn-guardar-signos" class="btn btn-primario btn-block mt-16">
+              Guardar y enviar a consulta
+            </button>
+          </form>
+        </div>
+
+        <a href="triaje.html" class="btn btn-secundario">← Volver a la cola</a>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="enfermeria.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Esperamos a que protegerPagina() complete antes de leer el paciente seleccionado
+      const verificarCarga = setInterval(() => {
+        if (window.usuarioActual) {
+          clearInterval(verificarCarga);
+          inicializarDatosPacienteSeleccionado();
+        }
+      }, 100);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Diagnóstico y Receta | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Diagnóstico y Receta Digital</h1>
+          <p>Registra el diagnóstico y genera la receta vinculada a la atención (CU-05)</p>
+        </div>
+
+        <div id="alerta-sin-paciente" class="mensaje visible mensaje-error" style="display:none;">
+          No se seleccionó ningún paciente. Vuelve a <a href="consulta.html"><strong>Consulta Médica</strong></a> y búscalo primero.
+        </div>
+
+        <div id="mensaje-medico" class="mensaje"></div>
+
+        <form id="form-diagnostico">
+          <div class="tarjeta">
+            <div class="tarjeta-titulo">🩺 Diagnóstico</div>
+            <div class="campo-grupo">
+              <label for="campo-diagnostico">Diagnóstico *</label>
+              <textarea id="campo-diagnostico" rows="3" placeholder="Describe el diagnóstico..." required></textarea>
+            </div>
+            <div class="campo-grupo">
+              <label for="campo-observaciones">Observaciones</label>
+              <textarea id="campo-observaciones" rows="2" placeholder="Observaciones adicionales (opcional)"></textarea>
+            </div>
+          </div>
+
+          <div class="tarjeta">
+            <div class="tarjeta-titulo">💊 Receta digital</div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="select-medicamento">Medicamento</label>
+                <select id="select-medicamento"></select>
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-dosis">Dosis</label>
+                <input type="text" id="campo-dosis" placeholder="Ej. 1 tableta" />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-frecuencia">Frecuencia</label>
+                <input type="text" id="campo-frecuencia" placeholder="Ej. cada 8 horas" />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-duracion">Duración</label>
+                <input type="text" id="campo-duracion" placeholder="Ej. 7 días" />
+              </div>
+            </div>
+
+            <button type="button" id="btn-agregar-medicamento" class="btn btn-secundario btn-block">
+              + Agregar medicamento a la receta
+            </button>
+
+            <div id="lista-medicamentos-receta" class="mt-16">
+              <p class="texto-suave">Aún no agregaste medicamentos a la receta.</p>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-guardar-consulta" class="btn btn-primario btn-block">
+            Cerrar atención y enviar a farmacia
+          </button>
+        </form>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../../recursos/js/services/recetaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="medico.js"></script>
+</body>
+</html>

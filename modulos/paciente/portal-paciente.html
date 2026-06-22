@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi Portal | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Mi Portal de Citas</h1>
+          <p>Consulta y cancela tus citas médicas programadas (CU-13)</p>
+        </div>
+
+        <div id="mensaje-paciente" class="mensaje"></div>
+
+        <div class="flex-entre mt-16" style="margin-bottom:16px;">
+          <span></span>
+          <a href="agendar-cita.html" class="btn btn-primario">+ Agendar nueva cita</a>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📅 Mis citas</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Especialidad</th>
+                <th>Médico</th>
+                <th>Estado / Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-mis-citas-body">
+              <tr><td colspan="5" class="estado-vacio">Cargando tus citas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="paciente.js"></script>
+</body>
+</html>

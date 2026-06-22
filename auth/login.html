@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iniciar sesión | SDGP - Villa Victoria Porvenir</title>
+  <link rel="stylesheet" href="../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../recursos/css/global.css" />
+  <link rel="stylesheet" href="auth.css" />
+</head>
+<body>
+
+  <div class="auth-pantalla">
+    <div class="auth-tarjeta">
+      <div class="auth-logo">
+        <div class="icono">+</div>
+        <h1>SDGP &mdash; Villa Victoria</h1>
+      </div>
+      <p class="auth-subtitulo">Sistema Digital de Gestión de Salud Primaria</p>
+
+      <div id="mensaje-login" class="mensaje"></div>
+
+      <form id="form-login" onsubmit="manejarLogin(event)">
+        <div class="campo-grupo">
+          <label for="login-email">Correo institucional</label>
+          <input type="email" id="login-email" placeholder="usuario@centrosalud.pe" required />
+        </div>
+
+        <div class="campo-grupo">
+          <label for="login-password">Contraseña</label>
+          <input type="password" id="login-password" placeholder="••••••••" required />
+        </div>
+
+        <button type="submit" id="btn-login" class="btn btn-primario btn-block">
+          Ingresar
+        </button>
+      </form>
+
+      <p class="auth-pie" style="color: var(--color-texto-suave); font-size: 13px; margin-top: 20px; border-top: 1px solid var(--color-borde); padding-top: 15px;">
+        ⚠️ Para obtener una cuenta o accesos, comuníquese con el <strong>Administrador del Centro de Salud</strong>.
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../recursos/js/supabase-config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

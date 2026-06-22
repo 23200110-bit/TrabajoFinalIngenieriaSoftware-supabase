@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventario | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Inventario de Medicamentos</h1>
+          <p>Control de stock y alertas automáticas de desabastecimiento (HU-07)</p>
+        </div>
+
+        <div id="contenedor-alertas-stock"></div>
+        <div id="mensaje-farmacia" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📦 Stock actual</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Medicamento</th>
+                <th>Presentación</th>
+                <th>Stock actual</th>
+                <th>Stock mínimo</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-inventario-body">
+              <tr><td colspan="6" class="estado-vacio">Cargando inventario...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/recetaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="farmacia.js"></script>
+</body>
+</html>

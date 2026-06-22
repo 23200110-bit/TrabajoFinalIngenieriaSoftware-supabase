@@ -1,0 +1,49 @@
+/* ============================================================================
+   ESTILOS: Dashboard del Encargado del Centro (HU-10, HU-11)
+   ============================================================================ */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.dashboard-kpi {
+  background: var(--color-blanco);
+  border-radius: var(--radio-borde);
+  padding: 20px;
+  box-shadow: var(--sombra-suave);
+  border-left: 4px solid var(--color-primario);
+}
+
+.dashboard-kpi.acento { border-left-color: var(--color-acento); }
+.dashboard-kpi.exito { border-left-color: var(--color-exito); }
+.dashboard-kpi.alerta { border-left-color: var(--color-alerta); }
+
+.dashboard-kpi .etiqueta {
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 8px;
+}
+
+.dashboard-kpi .valor {
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--color-texto);
+}
+
+.dashboard-kpi .detalle {
+  font-size: 0.8rem;
+  color: var(--color-texto-suave);
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+}

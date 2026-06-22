@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dispensación | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Dispensación de Medicamentos</h1>
+          <p>Valida el stock y entrega los medicamentos recetados (CU-06)</p>
+        </div>
+
+        <div id="mensaje-farmacia" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🔎 Buscar receta por DNI del paciente</div>
+          <form id="form-buscar-receta" class="flex-gap">
+            <input type="text" id="campo-dni-farmacia" maxlength="8" placeholder="Ej. 70512345"
+              required style="flex:1; padding:10px 14px; border:1.5px solid var(--color-borde); border-radius:6px;" />
+            <button type="submit" class="btn btn-primario">Buscar receta</button>
+          </form>
+        </div>
+
+        <div id="resultado-receta"></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/recetaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="farmacia.js"></script>
+</body>
+</html>

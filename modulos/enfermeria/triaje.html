@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Triaje | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Cola de Triaje</h1>
+          <p>Pacientes derivados desde admisión, en espera de toma de signos vitales</p>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🩺 Pacientes en espera</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>N° Turno</th>
+                <th>Paciente</th>
+                <th>Servicio solicitado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="cola-triaje-body">
+              <tr><td colspan="4" class="estado-vacio">Cargando cola de pacientes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="enfermeria.js"></script>
+</body>
+</html>

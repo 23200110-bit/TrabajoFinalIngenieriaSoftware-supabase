@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SDGP | Centro de Salud Villa Victoria Porvenir</title>
+  <link rel="stylesheet" href="recursos/css/variables.css" />
+  <link rel="stylesheet" href="recursos/css/global.css" />
+  <link rel="stylesheet" href="auth/auth.css" />
+</head>
+<body>
+
+  <div class="auth-pantalla">
+    <div class="auth-tarjeta" style="text-align:center;">
+      <div class="auth-logo" style="justify-content:center;">
+        <div class="icono">+</div>
+        <h1>SDGP &mdash; Villa Victoria</h1>
+      </div>
+      <p class="auth-subtitulo">Sistema Digital de Gestión de Salud Primaria</p>
+
+      <p class="texto-suave mt-16" id="texto-estado">Verificando sesión...</p>
+
+      <div class="flex-gap mt-16" style="justify-content:center;">
+        <a href="auth/login.html" class="btn btn-primario">Soy personal del centro</a>
+        <a href="auth/login.html" class="btn btn-secundario">Soy paciente</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="recursos/js/supabase-config.js"></script>
+  <script>
+    // Si ya hay sesión activa, redirige directo según el rol/perfil
+    (async () => {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) {
+        document.getElementById("texto-estado").textContent = "Inicia sesión para continuar.";
+        return;
+      }
+
+      // ¿Es personal del centro?
+      const { data: usuario } = await supabaseClient
+        .from("usuarios")
+        .select("rol")
+        .eq("auth_id", session.user.id)
+        .maybeSingle();
+
+      if (usuario) {
+        const rutas = {
+          admision: "modulos/admision/registrar-paciente.html",
+          enfermeria: "modulos/enfermeria/triaje.html",
+          medico: "modulos/medico/consulta.html",
+          farmacia: "modulos/farmacia/dispensacion.html",
+          administrador: "modulos/administrador/usuarios.html",
+          encargado: "modulos/paneles-compartidos/dashboard.html",
+        };
+        window.location.href = rutas[usuario.rol] || "auth/login.html";
+        return;
+      }
+
+      // ¿Es paciente?
+      const { data: paciente } = await supabaseClient
+        .from("pacientes")
+        .select("id")
+        .eq("auth_id", session.user.id)
+        .maybeSingle();
+
+      if (paciente) {
+        window.location.href = "modulos/paciente/portal-paciente.html";
+      } else {
+        document.getElementById("texto-estado").textContent = "Inicia sesión para continuar.";
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consulta Médica | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Consulta Médica</h1>
+          <p>Pacientes en cola esperando atención clínica</p>
+        </div>
+
+        <!-- TABLA DE COLAS -->
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📋 Pacientes en Espera de Consulta (Triados)</div>
+          <div style="overflow-x: auto; margin-top: 10px;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--color-borde); color: var(--color-texto-suave); font-size: 13px;">
+                  <th style="padding: 12px 8px;">N° TURNO</th>
+                  <th style="padding: 12px 8px;">PACIENTE</th>
+                  <th style="padding: 12px 8px;">ESPECIALIDAD</th>
+                  <th style="padding: 12px 8px;">PRIORIDAD TRIAJE</th>
+                  <th style="padding: 12px 8px;">SIGNOS VITALES</th>
+                  <th style="padding: 12px 8px; text-align:right;">ACCIONES</th>
+                </tr>
+              </thead>
+              <tbody id="cola-medica-body">
+                <tr>
+                  <td colspan="6" style="text-align:center; padding:20px; color:var(--color-texto-suave);">
+                    Cargando pacientes en espera...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="ficha-paciente-consulta"></div>
+
+        <!-- =================================================================== -->
+        <!-- ✨ MODAL FLOTANTE SENIOR: Ventana de Historia Clínica Cronológica -->
+        <!-- =================================================================== -->
+        <div id="modal-historia" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; align-items:center; justify-content:center;">
+          <div class="tarjeta" style="width:90%; max-width:700px; max-height:85vh; overflow-y:auto; background:white; padding:24px; border-radius:8px; position:relative; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+            
+            <div class="flex-entre" style="border-bottom:2px solid var(--color-borde); padding-bottom:12px; margin-bottom:16px;">
+              <h2 id="modal-historia-titulo" style="margin:0; font-size:1.4rem; color:var(--color-primario);">📋 Historia Clínica</h2>
+              <button type="button" class="btn btn-peligro btn-sm" onclick="cerrarModalHistoria()" style="padding:6px 12px;">Cerrar ✕</button>
+            </div>
+
+            <!-- Contenido Dinámico cargado desde JS -->
+            <div id="modal-historia-contenido"></div>
+            
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="medico.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asignar Turno | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+  <link rel="stylesheet" href="admision.css" />
+  <style>
+    .campo-congelado {
+      background-color: #f4f6f9 !important;
+      color: #495057 !important;
+      cursor: not-allowed !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Asignar Turno Automático</h1>
+          <p>Genera el turno del día y deriva al paciente al área de triaje (CU-02)</p>
+        </div>
+
+        <div id="mensaje-admision" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🎫 Generar turno (Paciente Reciente)</div>
+
+          <form id="form-asignar-turno">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-dni-turno">DNI del paciente</label>
+                <input type="text" id="campo-dni-turno" class="campo-congelado" readonly required />
+              </div>
+              <div class="campo-grupo">
+                <label for="campo-nombre-completo-turno">Paciente seleccionado</label>
+                <input type="text" id="campo-nombre-completo-turno" class="campo-congelado" readonly />
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-servicio">Servicio solicitado</label>
+                <select id="campo-servicio" required>
+                  <option value="Medicina General">Medicina General</option>
+                  <option value="Pediatría">Pediatría</option>
+                  <option value="Ginecología">Ginecología</option>
+                  <option value="Odontología">Odontología</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-asignar-turno" class="btn btn-primario btn-block">
+              Generar turno y derivar
+            </button>
+          </form>
+
+          <div id="resultado-turno" class="resultado-busqueda">
+            <div class="turno-generado">
+              <div class="numero">#<span id="numero-turno-generado">--</span></div>
+              <div class="etiqueta">Turno generado correctamente</div>
+            </div>
+            <div class="fila-dato">
+              <span>Paciente</span>
+              <strong id="nombre-paciente-turno">--</strong>
+            </div>
+            <div class="fila-dato">
+              <span>Derivado a</span>
+              <strong id="servicio-turno">--</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📋 Turnos del día (orden de llegada)</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>N° Turno</th>
+                <th>Paciente</th>
+                <th>Servicio</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-turnos-body">
+              <tr><td colspan="4" class="estado-vacio">Cargando turnos...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="admision.js"></script>
+</body>
+</html>

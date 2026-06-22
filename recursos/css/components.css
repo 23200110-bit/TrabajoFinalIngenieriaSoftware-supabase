@@ -1,0 +1,131 @@
+/* ============================================================================
+   COMPONENTES COMPARTIDOS: Navbar y Sidebar
+   ============================================================================ */
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: 240px;
+  background: var(--color-primario-oscuro);
+  color: var(--color-blanco);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-height: 100vh; 
+  height: 100%;
+}
+
+.sidebar-marca {
+  padding: 22px 20px;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sidebar-marca .icono {
+  width: 32px;
+  height: 32px;
+  background: var(--color-acento);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primario-oscuro);
+  font-weight: 800;
+}
+
+.sidebar-rol {
+  padding: 14px 20px;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: rgba(255,255,255,0.6);
+}
+
+.sidebar-menu {
+  flex: 1;
+  padding: 8px 0;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  font-size: 0.92rem;
+  color: rgba(255,255,255,0.85);
+  transition: var(--transicion);
+  border-left: 3px solid transparent;
+}
+
+.sidebar-menu li a:hover {
+  background: rgba(255,255,255,0.08);
+  color: var(--color-blanco);
+}
+
+.sidebar-menu li a.activo {
+  background: rgba(255,255,255,0.1);
+  border-left-color: var(--color-acento);
+  color: var(--color-blanco);
+  font-weight: 600;
+}
+
+.sidebar-pie {
+  padding: 16px 20px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+/* ---------- Navbar superior ---------- */
+.navbar {
+  background: var(--color-blanco);
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--sombra-suave);
+}
+
+.navbar-usuario {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-usuario .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.navbar-usuario .info-usuario .nombre {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.navbar-usuario .info-usuario .rol {
+  font-size: 0.76rem;
+  color: var(--color-texto-suave);
+}
+
+.btn-cerrar-sesion {
+  background: transparent;
+  color: var(--color-texto-suave);
+  font-size: 0.85rem;
+  padding: 8px 14px;
+  border-radius: var(--radio-borde-chico);
+  transition: var(--transicion);
+}
+
+.btn-cerrar-sesion:hover {
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}

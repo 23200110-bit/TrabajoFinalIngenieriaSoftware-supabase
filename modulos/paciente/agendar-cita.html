@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendar Cita | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Agendar Cita Médica</h1>
+          <p>Elige especialidad, médico y horario disponible (CU-13)</p>
+        </div>
+
+        <div id="mensaje-paciente" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <form id="form-agendar-cita">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="select-especialidad-cita">Especialidad</label>
+                <select id="select-especialidad-cita" required></select>
+              </div>
+              <div class="campo-grupo">
+                <label for="select-medico-cita">Médico</label>
+                <select id="select-medico-cita" required></select>
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="campo-fecha-cita">Fecha</label>
+                <input type="date" id="campo-fecha-cita" required />
+              </div>
+              <div class="campo-grupo">
+                <label for="select-horario-cita">Horario disponible</label>
+                <select id="select-horario-cita" required>
+                  <option value="">Selecciona médico y fecha primero</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primario btn-block">Confirmar cita</button>
+          </form>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="paciente.js"></script>
+</body>
+</html>

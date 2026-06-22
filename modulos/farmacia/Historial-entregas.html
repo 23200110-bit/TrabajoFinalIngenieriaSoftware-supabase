@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historial de Entregas | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <!-- El sidebar se montará aquí dinámicamente -->
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <!-- El navbar se montará aquí dinámicamente -->
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>📋 Historial de Medicamentos Entregados</h1>
+          <p>Consulte y verifique las recetas dispensadas a los pacientes para auditorías o reclamos.</p>
+        </div>
+
+        <!-- FILTRADO POR DNI -->
+        <div class="tarjeta" style="margin-bottom: 20px;">
+          <div class="tarjeta-titulo">🔎 Filtrar por Documento de Identidad (DNI)</div>
+          <div class="flex-gap" style="margin-top: 10px;">
+            <input type="text" id="buscar-dni" maxlength="8" placeholder="Ingrese el DNI del paciente..." 
+                   style="flex:1; padding:10px 14px; border:1.5px solid var(--color-borde); border-radius:6px;" />
+            <button type="button" class="btn btn-primario" id="btn-buscar">Buscar Paciente</button>
+            <button type="button" class="btn btn-secundario" id="btn-limpiar">Ver Todos</button>
+          </div>
+        </div>
+
+        <!-- TABLA DE HISTORIAL -->
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📦 Registro de Dispensaciones Realizadas</div>
+          <div style="overflow-x: auto; margin-top: 10px;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+              <thead>
+                <tr style="border-bottom: 2px solid var(--color-borde); color: var(--color-texto-suave); font-size: 13px;">
+                  <th style="padding: 12px 8px;">FECHA / HORA</th>
+                  <th style="padding: 12px 8px;">PACIENTE (DNI)</th>
+                  <th style="padding: 12px 8px;">MEDICAMENTO ENTREGADO</th>
+                  <th style="padding: 12px 8px; text-align:center;">CANTIDAD</th>
+                  <th style="padding: 12px 8px;">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody id="tabla-historial-body">
+                <!-- Los datos se inyectarán desde alertas-stock.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Dependencias del Sistema -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  
+  <!-- Vinculamos tu archivo JS del mismo directorio -->
+  <script src="historial-entregas.js"></script>
+</body>
+</html>

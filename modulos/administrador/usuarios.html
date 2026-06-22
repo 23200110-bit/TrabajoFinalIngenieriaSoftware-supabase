@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usuarios y Roles | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+  <style>
+    /* Estilos estructurales para el Modal Emergente sin romper tus clases globales */
+    .modal-backdrop {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5); display: flex; align-items: center;
+      justify-content: center; z-index: 1000; opacity: 0; visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal-backdrop.activo { opacity: 1; visibility: visible; }
+    .modal-ventana {
+      background: #ffffff; padding: 25px; border-radius: 8px;
+      width: 100%; max-width: 480px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      transform: translateY(-20px); transition: all 0.3s ease;
+    }
+    .modal-backdrop.activo .modal-ventana { transform: translateY(0); }
+    .campo-grupo { margin-bottom: 15px; display: flex; flex-direction: column; gap: 5px; }
+    .campo-grupo label { font-weight: 500; font-size: 14px; color: var(--color-texto); }
+    .campo-grupo input, .campo-grupo select {
+      padding: 8px 12px; border: 1px solid var(--color-borde); border-radius: 4px; font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Gestión de Usuarios y Roles</h1>
+          <p>Controla el acceso del personal al sistema (CU-09)</p>
+        </div>
+
+        <div id="mensaje-admin" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="flex-entre tarjeta-titulo">
+            <span>👥 Cuentas registradas</span>
+            <button class="btn btn-primario btn-sm" onclick="abrirModalRegistro()">+ Nuevo usuario</button>
+          </div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>DNI</th>
+                <th>Correo</th> 
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-usuarios-body">
+              <tr><td colspan="6" class="estado-vacio">Cargando usuarios...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal-registro" class="modal-backdrop">
+    <div class="modal-ventana">
+      <div class="flex-entre" style="margin-bottom: 20px; border-bottom: 1px solid var(--color-borde); padding-bottom: 10px;">
+        <h3 style="margin: 0; font-size: 18px; color: var(--color-primario);">Crear Cuenta de Personal</h3>
+        <button onclick="cerrarModalRegistro()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-texto-suave);">&times;</button>
+      </div>
+
+      <div id="mensaje-registro" class="mensaje" style="margin-bottom: 15px;"></div>
+
+      <form id="form-registro" onsubmit="manejarRegistro(event)">
+        <div class="campo-grupo">
+          <label for="reg-nombre">Nombre completo</label>
+          <input type="text" id="reg-nombre" placeholder="Ej. María Pérez López" required />
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <div class="campo-grupo" style="flex: 1;">
+            <label for="reg-dni">DNI</label>
+            <input type="text" id="reg-dni" maxlength="8" placeholder="12345678" required />
+          </div>
+          <div class="campo-grupo" style="flex: 1;">
+            <label for="reg-rol">Rol asignado</label>
+            <select id="reg-rol" onchange="alternarCampoEspecialidad()" required>
+              <option value="" disabled selected>Selecciona...</option>
+              <option value="admision">Admisión</option>
+              <option value="enfermeria">Enfermería</option>
+              <option value="medico">Médico</option>
+              <option value="farmacia">Farmacia</option>
+              <option value="encargado">Encargado del Centro</option>
+              <option value="administrador">Administrador</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="campo-grupo" id="grupo-especialidad" style="display: none;">
+          <label for="reg-especialidad">Especialidad médica</label>
+          <input type="text" id="reg-especialidad" placeholder="Ej. Pediatría, Medicina General" />
+        </div>
+
+        <div class="campo-grupo">
+          <label for="reg-email">Correo institucional</label>
+          <input type="email" id="reg-email" placeholder="usuario@centrosalud.pe" required />
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <div class="campo-grupo" style="flex: 1;">
+            <label for="reg-password">Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required />
+          </div>
+          <div class="campo-grupo" style="flex: 1;">
+            <label for="reg-confirm-password">Confirmar clave</label>
+            <input type="password" id="reg-confirm-password" placeholder="Repite clave" required />
+          </div>
+        </div>
+
+        <div class="flex-final" style="gap: 10px; margin-top: 20px; border-top: 1px solid var(--color-borde); padding-top: 15px;">
+          <button type="button" class="btn btn-secundario" onclick="cerrarModalRegistro()">Cancelar</button>
+          <button type="submit" id="btn-registro" class="btn btn-primario">Crear cuenta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="administrador.js"></script>
+  <script src="../../auth/auth.js"></script>
+
+  <script>
+    // Controladores visuales del modal dentro de la vista de usuarios
+    function abrirModalRegistro() {
+      document.getElementById("form-registro").reset();
+      document.getElementById("grupo-especialidad").style.display = "none";
+      ocultarMensaje("mensaje-registro");
+      document.getElementById("modal-registro").classList.add("activo");
+    }
+    function cerrarModalRegistro() {
+      document.getElementById("modal-registro").classList.remove("activo");
+    }
+  </script>
+</body>
+</html>

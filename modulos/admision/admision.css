@@ -1,0 +1,42 @@
+/* ============================================================================
+   ESTILOS: Módulo de Admisión
+   ============================================================================ */
+
+.resultado-busqueda {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  background: var(--color-primario-claro);
+  border-radius: var(--radio-borde);
+  border: 1px solid var(--color-primario);
+}
+
+.resultado-busqueda.visible { display: block; }
+
+.resultado-busqueda .fila-dato {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.resultado-busqueda .fila-dato:last-child { border-bottom: none; }
+
+.turno-generado {
+  text-align: center;
+  padding: 30px;
+}
+
+.turno-generado .numero {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--color-primario);
+  line-height: 1;
+}
+
+.turno-generado .etiqueta {
+  color: var(--color-texto-suave);
+  font-size: 0.9rem;
+  margin-top: 6px;
+}

@@ -1,0 +1,68 @@
+/* ============================================================================
+   ESTILOS: Login y Registro
+   ============================================================================ */
+
+.auth-pantalla {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primario) 0%, var(--color-primario-oscuro) 100%);
+  padding: 20px;
+}
+
+.auth-tarjeta {
+  background: var(--color-blanco);
+  border-radius: 16px;
+  box-shadow: var(--sombra-media);
+  width: 100%;
+  max-width: 420px;
+  padding: 40px 36px;
+}
+
+.auth-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.auth-logo .icono {
+  width: 44px;
+  height: 44px;
+  background: var(--color-acento);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-primario-oscuro);
+}
+
+.auth-logo h1 {
+  font-size: 1.25rem;
+  color: var(--color-primario-oscuro);
+}
+
+.auth-subtitulo {
+  color: var(--color-texto-suave);
+  font-size: 0.88rem;
+  margin-bottom: 28px;
+}
+
+.auth-pie {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 0.88rem;
+  color: var(--color-texto-suave);
+}
+
+.auth-pie a {
+  color: var(--color-primario);
+  font-weight: 600;
+}
+
+.auth-pie a:hover {
+  text-decoration: underline;
+}

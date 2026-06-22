@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Historia Clínica | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Historia Clínica Cronológica</h1>
+          <p>Consulta los antecedentes completos del paciente antes de atenderlo (CU-04)</p>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🔎 Buscar paciente</div>
+          <form id="form-buscar-historia" class="flex-gap">
+            <input type="text" id="campo-dni-historia" maxlength="8" placeholder="DNI del paciente"
+              required style="flex:1; padding:10px 14px; border:1.5px solid var(--color-borde); border-radius:6px;" />
+            <button type="submit" class="btn btn-primario">Ver historial</button>
+          </form>
+        </div>
+
+        <div id="resultado-historia"></div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/pacienteService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="medico.js"></script>
+</body>
+</html>

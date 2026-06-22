@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agendas Médicas | SDGP</title>
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+<body>
+
+  <div class="contenedor-app">
+    <div id="sidebar-mount"></div>
+
+    <div style="flex:1; display:flex; flex-direction:column;">
+      <div id="navbar-mount"></div>
+
+      <main class="contenido-principal">
+        <div class="cabecera-pagina">
+          <h1>Gestión de Agendas Médicas</h1>
+          <p>Define horarios por especialidad y reacciona ante contingencias (CU-12)</p>
+        </div>
+
+        <div id="mensaje-admin" class="mensaje"></div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">📅 Definir nuevo horario</div>
+          <form id="form-definir-horario">
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="select-medico-agenda">Médico</label>
+                <select id="select-medico-agenda" required></select>
+              </div>
+              <div class="campo-grupo">
+                <label for="select-especialidad-agenda">Especialidad</label>
+                <select id="select-especialidad-agenda" required></select>
+              </div>
+            </div>
+
+            <div class="fila-campos">
+              <div class="campo-grupo">
+                <label for="select-dia-semana">Día de la semana</label>
+                <select id="select-dia-semana" required>
+                  <option value="1">Lunes</option>
+                  <option value="2">Martes</option>
+                  <option value="3">Miércoles</option>
+                  <option value="4">Jueves</option>
+                  <option value="5">Viernes</option>
+                  <option value="6">Sábado</option>
+                  <option value="7">Domingo</option>
+                </select>
+              </div>
+              <div class="campo-grupo">
+                <label>Horario</label>
+                <div class="flex-gap">
+                  <input type="time" id="campo-hora-inicio" required />
+                  <span>—</span>
+                  <input type="time" id="campo-hora-fin" required />
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primario btn-block">Guardar horario</button>
+          </form>
+        </div>
+
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">🗓️ Horarios programados</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-agendas-body">
+              <tr><td colspan="6" class="estado-vacio">Cargando agendas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../../recursos/js/supabase-config.js"></script>
+  <script src="../../recursos/js/services/authGuard.js"></script>
+  <script src="../../recursos/js/services/citaService.js"></script>
+  <script src="../paneles-compartidos/layout.js"></script>
+  <script src="administrador.js"></script>
+</body>
+</html>

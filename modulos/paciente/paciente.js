@@ -7,7 +7,6 @@ let usuarioSesion = null;
 let perfilPacienteId = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-  // El paciente no tiene rol en "usuarios" -> usamos su propia verificación
   const { data: { session } } = await supabaseClient.auth.getSession();
 
   if (!session) {
@@ -22,8 +21,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     await inicializarAgendarCita();
   }
 
-  if (document.getElementById("tabla-mis-citas-body")) {
-    await cargarMisCitas();
+  // Ejecución coordinada del renderizado de tablas
+  if (document.getElementById("tabla-mis-citas-activas-body") || document.getElementById("tabla-historial-paciente-body")) {
+    await cargarEstructuraTablasYHistorial();
   }
 });
 
@@ -100,14 +100,13 @@ async function inicializarAgendarCita() {
   document.getElementById("select-medico-cita").addEventListener("change", cargarHorariosDisponiblesPaciente);
   document.getElementById("form-agendar-cita").addEventListener("submit", confirmarAgendarCita);
 
-  // Fecha mínima: hoy
   document.getElementById("campo-fecha-cita").min = new Date().toISOString().split("T")[0];
 }
 
 async function cargarSelectEspecialidadesPaciente() {
   const select = document.getElementById("select-especialidad-cita");
-  const especialidades = await citaService.listarEspecialidades();
-  select.innerHTML = especialidades.map((e) => `<option value="${e.id}">${e.nombre}</option>`).join("");
+  const fillEspecialidades = await citaService.listarEspecialidades();
+  select.innerHTML = fillEspecialidades.map((e) => `<option value="${e.id}">${e.nombre}</option>`).join("");
 }
 
 async function cargarSelectMedicosPaciente() {
@@ -145,11 +144,14 @@ async function confirmarAgendarCita(event) {
   event.preventDefault();
   ocultarMensajePaciente();
 
+  const fechaSeleccionada = document.getElementById("campo-fecha-cita").value;
+  const sintomasIngresados = document.getElementById("campo-sintomas-cita").value.trim();
+
   const datos = {
     pacienteId: perfilPacienteId,
     medicoId: document.getElementById("select-medico-cita").value,
     especialidadId: document.getElementById("select-especialidad-cita").value,
-    fecha: document.getElementById("campo-fecha-cita").value,
+    fecha: fechaSeleccionada,
     hora: document.getElementById("select-horario-cita").value,
   };
 
@@ -159,8 +161,20 @@ async function confirmarAgendarCita(event) {
   }
 
   try {
+    const { count, error: errorCount } = await supabaseClient
+      .from("citas")
+      .select("*", { count: "exact", head: true })
+      .eq("fecha", fechaSeleccionada);
+
+    if (errorCount) throw errorCount;
+
+    datos.numero_turno = (count || 0) + 1;
+    datos.observaciones = sintomasIngresados;
+    datos.estado = "programada";
+
     await citaService.agendarCita(datos);
-    mostrarMensajePaciente("Tu cita fue agendada correctamente.", "exito");
+
+    mostrarMensajePaciente(`✅ Tu cita fue agendada correctamente. Turno asignado: #${datos.numero_turno}`, "exito");
     document.getElementById("form-agendar-cita").reset();
     setTimeout(() => (window.location.href = "portal-paciente.html"), 1500);
   } catch (err) {
@@ -169,41 +183,92 @@ async function confirmarAgendarCita(event) {
 }
 
 // ---------------------------------------------------------------------------
-// CU-13: Consultar y cancelar citas
+// CU-13: Consultar, Filtrar y Cancelar Citas Cruzadas con Historial
 // ---------------------------------------------------------------------------
-async function cargarMisCitas() {
-  const tbody = document.getElementById("tabla-mis-citas-body");
+async function cargarEstructuraTablasYHistorial() {
+  const tbodyActivas = document.getElementById("tabla-mis-citas-activas-body");
+  const tbodyHistorial = document.getElementById("tabla-historial-paciente-body");
+
+  let HTMLActivas = "";
+  let HTMLHistorial = "";
 
   try {
+    // 1. Obtener citas del paciente desde el servicio nativo
     const citas = await citaService.listarCitasPaciente(perfilPacienteId);
 
-    if (citas.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="estado-vacio">No tienes citas programadas. <a href="agendar-cita.html">Agenda una aquí</a>.</td></tr>`;
+    // Filtrar citas activas vigentes
+    const activas = citas.filter(c => c.estado === "programada" || c.estado === "confirmada");
+    // Filtrar las canceladas del sistema para procesarlas en el historial
+    const canceladas = citas.filter(c => c.estado === "cancelada");
+
+    if (activas.length === 0) {
+      if (tbodyActivas) tbodyActivas.innerHTML = `<tr><td colspan="5" class="estado-vacio">No tienes citas programadas. <a href="agendar-cita.html">Agenda una aquí</a>.</td></tr>`;
+    } else if (tbodyActivas) {
+      HTMLActivas = activas.map(c => `
+        <tr>
+          <td>${formatearFechaCita(c.fecha)}</td>
+          <td>${c.hora.slice(0, 5)}</td>
+          <td>${c.especialidades?.nombre || "—"}</td>
+          <td>${c.usuarios?.nombre_completo || "—"}</td>
+          <td>
+            ${badgeEstadoCita(c.estado)}
+            ${c.estado === "programada" ? `<button class="btn btn-peligro btn-sm" style="margin-left:8px;" onclick="cancelarMiCita('${c.id}')">Cancelar</button>` : ""}
+          </td>
+        </tr>
+      `).join("");
+      tbodyActivas.innerHTML = HTMLActivas;
+    }
+
+    // 2. Extraer consultas médicas completadas de la base de datos
+    const { data: consultas, error } = await supabaseClient
+      .from("consultas")
+      .select(`
+        id, fecha, diagnostico, observaciones,
+        usuarios:medico_id ( nombre_completo )
+      `)
+      .eq("paciente_id", perfilPacienteId)
+      .eq("estado", "completada")
+      .order("fecha", { ascending: false });
+
+    if (error) throw error;
+
+    // 3. Cruzar e imprimir datos combinados en el Historial Clínico
+    if (canceladas.length === 0 && (!consultas || consultas.length === 0)) {
+      if (tbodyHistorial) tbodyHistorial.innerHTML = `<tr><td colspan="4" class="estado-vacio">No registras atenciones, recetas médicas ni anulaciones en el historial.</td></tr>`;
       return;
     }
 
-    tbody.innerHTML = citas
-      .map(
-        (c) => `
-      <tr>
-        <td>${formatearFechaCita(c.fecha)}</td>
-        <td>${c.hora.slice(0, 5)}</td>
-        <td>${c.especialidades?.nombre || "—"}</td>
-        <td>${c.usuarios?.nombre_completo || "—"}</td>
-        <td>
-          ${badgeEstadoCita(c.estado)}
-          ${
-            c.estado === "programada"
-              ? `<button class="btn btn-peligro btn-sm" style="margin-left:8px;" onclick="cancelarMiCita('${c.id}')">Cancelar</button>`
-              : ""
-          }
-        </td>
-      </tr>
-    `
-      )
-      .join("");
+    // Insertar registros de citas canceladas en el renderizado del historial
+    canceladas.forEach(c => {
+      HTMLHistorial += `
+        <tr style="background-color: #fff5f5; opacity: 0.85;">
+          <td>${formatearFechaCita(c.fecha)}</td>
+          <td>Dr(a). ${c.usuarios?.nombre_completo || "—"}</td>
+          <td><span class="badge badge-error">Cancelada</span></td>
+          <td style="color: #c53030; font-style: italic;">Cita anulada por el paciente (No generó consulta médica).</td>
+        </tr>
+      `;
+    });
+
+    // Insertar consultas médicas atendidas con éxito
+    if (consultas && consultas.length > 0) {
+      consultas.forEach(h => {
+        HTMLHistorial += `
+          <tr>
+            <td>${formatearFechaCita(h.fecha)}</td>
+            <td>Dr(a). ${h.usuarios?.nombre_completo || "General"}</td>
+            <td><span class="badge badge-exito">Atendido</span> <b style="color: var(--color-primario); margin-left: 5px;">${h.diagnostico || "Sin diagnóstico"}</b></td>
+            <td><div style="font-size:13px; line-height: 1.4;">${h.observaciones || "Ninguna indicación registrada"}</div></td>
+          </tr>
+        `;
+      });
+    }
+
+    if (tbodyHistorial) tbodyHistorial.innerHTML = HTMLHistorial;
+
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" class="estado-vacio">Error al cargar tus citas.</td></tr>`;
+    if (tbodyActivas) tbodyActivas.innerHTML = `<tr><td colspan="5" class="estado-vacio">Error al cargar datos.</td></tr>`;
+    if (tbodyHistorial) tbodyHistorial.innerHTML = `<tr><td colspan="4" class="estado-vacio">Error al cargar historial clínico.</td></tr>`;
   }
 }
 
@@ -212,8 +277,8 @@ async function cancelarMiCita(citaId) {
 
   try {
     await citaService.cancelarCita(citaId);
-    mostrarMensajePaciente("Cita cancelada. El horario quedó disponible nuevamente.", "exito");
-    await cargarMisCitas();
+    mostrarMensajePaciente("Cita cancelada. El horario quedó disponible nuevamente y se archivó en tu historial.", "exito");
+    await cargarEstructuraTablasYHistorial();
   } catch (err) {
     mostrarMensajePaciente("No se pudo cancelar la cita: " + err.message, "error");
   }
@@ -244,4 +309,9 @@ function mostrarMensajePaciente(texto, tipo) {
 function ocultarMensajePaciente() {
   const el = document.getElementById("mensaje-paciente");
   if (el) el.classList.remove("visible");
+}
+
+async function cerrarSesion() {
+  await supabaseClient.auth.signOut();
+  window.location.href = "../../auth/login.html";
 }

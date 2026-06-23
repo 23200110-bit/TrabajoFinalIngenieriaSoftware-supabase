@@ -7,6 +7,48 @@
   <link rel="stylesheet" href="../../recursos/css/variables.css" />
   <link rel="stylesheet" href="../../recursos/css/global.css" />
   <link rel="stylesheet" href="../../recursos/css/components.css" />
+  <style>
+    /* Estilos Senior optimizados para la visualización del calendario en bloques */
+    .celda-dia {
+      padding: 10px;
+      border-right: 1px solid var(--color-borde);
+      vertical-align: top;
+      height: 100px;
+      transition: background-color 0.2s ease;
+    }
+    .bloque-tarjeta-medico {
+      background: white;
+      border-left: 4px solid var(--color-primario);
+      padding: 8px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      font-size: 12px;
+      text-align: left;
+    }
+    .checkbox-grupo {
+      display: flex; 
+      gap: 15px; 
+      flex-wrap: wrap; 
+      margin-top: 8px;
+      background: #f8fafc;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid var(--color-borde);
+    }
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .checkbox-label input {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+    }
+  </style>
 </head>
 <body>
 
@@ -25,7 +67,7 @@
         <div id="mensaje-admin" class="mensaje"></div>
 
         <div class="tarjeta">
-          <div class="tarjeta-titulo">📅 Definir nuevo horario</div>
+          <div class="tarjeta-titulo">📅 Definir Horarios (Múltiples combinaciones)</div>
           <form id="form-definir-horario">
             <div class="fila-campos">
               <div class="campo-grupo">
@@ -39,49 +81,91 @@
             </div>
 
             <div class="fila-campos">
-              <div class="campo-grupo">
-                <label for="select-dia-semana">Día de la semana</label>
-                <select id="select-dia-semana" required>
-                  <option value="1">Lunes</option>
-                  <option value="2">Martes</option>
-                  <option value="3">Miércoles</option>
-                  <option value="4">Jueves</option>
-                  <option value="5">Viernes</option>
-                  <option value="6">Sábado</option>
-                  <option value="7">Domingo</option>
-                </select>
-              </div>
-              <div class="campo-grupo">
-                <label>Horario</label>
-                <div class="flex-gap">
-                  <input type="time" id="campo-hora-inicio" required />
-                  <span>—</span>
-                  <input type="time" id="campo-hora-fin" required />
+              <div class="campo-grupo" style="flex: 1;">
+                <label>Días de la semana aplicables</label>
+                <div class="checkbox-grupo">
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="1"> Lunes</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="2"> Martes</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="3"> Miércoles</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="4"> Jueves</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="5"> Viernes</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="6"> Sábado</label>
+                  <label class="checkbox-label"><input type="checkbox" name="dias-agenda" value="7"> Domingo</label>
                 </div>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primario btn-block">Guardar horario</button>
+            <!--  PEGA ESTO EN SU LUGAR (Formato 24h garantizado): -->
+            <div class="fila-campos">
+              <div class="campo-grupo" style="flex: 1;">
+                <label>Rango Horario del Turno (Formato 24h)</label>
+                <div class="flex-gap" style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                  
+                  <!-- Selector Hora Inicio -->
+                  <select id="campo-hora-inicio" required style="padding: 8px; border-radius: 4px; border: 1px solid var(--color-borde); flex: 1; min-width: 120px;">
+                    <option value="08:00">08:00</option>
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="19:00">19:00</option>
+                  </select>
+                  
+                  <span style="font-weight: bold; color: var(--color-texto-suave);">—</span>
+                  
+                  <!-- Selector Hora Fin -->
+                  <select id="campo-hora-fin" required style="padding: 8px; border-radius: 4px; border: 1px solid var(--color-borde); flex: 1; min-width: 120px;">
+                    <option value="09:00">09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="11:00">11:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="13:00">13:00</option>
+                    <option value="14:00">14:00</option>
+                    <option value="15:00">15:00</option>
+                    <option value="16:00">16:00</option>
+                    <option value="17:00">17:00</option>
+                    <option value="18:00">18:00</option>
+                    <option value="19:00">19:00</option>
+                    <option value="20:00">20:00</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primario btn-block">Guardar combinación de horarios</button>
           </form>
         </div>
 
-        <div class="tarjeta">
-          <div class="tarjeta-titulo">🗓️ Horarios programados</div>
-          <table class="tabla-datos">
-            <thead>
-              <tr>
-                <th>Médico</th>
-                <th>Especialidad</th>
-                <th>Día</th>
-                <th>Horario</th>
-                <th>Estado</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tabla-agendas-body">
-              <tr><td colspan="6" class="estado-vacio">Cargando agendas...</td></tr>
-            </tbody>
-          </table>
+        <div class="tarjeta" style="margin-top: 25px;">
+          <div class="tarjeta-titulo">🗓️ Calendario Semanal y Distribución de Bloques</div>
+          <div class="tabla-contenedor" style="overflow-x: auto;">
+            <table class="tabla" style="table-layout: fixed; width: 100%; min-width: 900px; border-collapse: collapse;">
+              <thead>
+                <tr style="background-color: var(--color-primario); color: white;">
+                  <th style="width: 140px; text-align: center; padding: 12px; font-size: 14px;">Bloque / Horas</th>
+                  <th style="text-align: center; font-size: 14px;">Lunes</th>
+                  <th style="text-align: center; font-size: 14px;">Martes</th>
+                  <th style="text-align: center; font-size: 14px;">Miércoles</th>
+                  <th style="text-align: center; font-size: 14px;">Jueves</th>
+                  <th style="text-align: center; font-size: 14px;">Viernes</th>
+                  <th style="text-align: center; font-size: 14px;">Sábado</th>
+                  <th style="text-align: center; font-size: 14px;">Domingo</th>
+                </tr>
+              </thead>
+              <tbody id="calendario-semanal-body">
+                <tr>
+                  <td colspan="8" class="estado-vacio">Generando matriz de distribución...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>

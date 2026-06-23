@@ -1,5 +1,5 @@
 // ============================================================================
-// AUTH: Login y Registro
+// AUTH: Registro Dinámico con Lógica de Seguro y Estructura Pacientes Nativa
 // ============================================================================
 
 function mostrarMensaje(elementoId, texto, tipo = "error") {
@@ -15,7 +15,7 @@ function ocultarMensaje(elementoId) {
 }
 
 // ---------------------------------------------------------------------------
-// LOGIN (usado en login.html)
+// LOGIN (Mantiene soporte cruzado)
 // ---------------------------------------------------------------------------
 async function manejarLogin(event) {
   event.preventDefault();
@@ -32,17 +32,29 @@ async function manejarLogin(event) {
     const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
     if (error) throw error;
 
-    const { data: perfil, error: errorPerfil } = await supabaseClient
+    const { data: perfil } = await supabaseClient
       .from("usuarios")
       .select("rol")
       .eq("auth_id", data.user.id)
-      .single();
+      .maybeSingle();
 
-    if (errorPerfil || !perfil) {
-      throw new Error("Tu cuenta no tiene un perfil asignado. Contacta al administrador.");
+    if (perfil) {
+      redirigirSegunRol(perfil.rol);
+      return;
     }
 
-    redirigirSegunRol(perfil.rol);
+    const { data: paciente } = await supabaseClient
+      .from("pacientes")
+      .select("id")
+      .eq("auth_id", data.user.id)
+      .maybeSingle();
+
+    if (paciente) {
+      redirigirSegunRol("paciente");
+      return;
+    }
+
+    throw new Error("Tu cuenta no tiene un perfil asignado.");
   } catch (err) {
     mostrarMensaje("mensaje-login", traducirErrorAuth(err.message), "error");
     btn.disabled = false;
@@ -58,88 +70,87 @@ function redirigirSegunRol(rol) {
     farmacia: "/modulos/farmacia/dispensacion.html",
     administrador: "/modulos/administrador/usuarios.html",
     encargado: "/modulos/paneles-compartidos/dashboard.html",
+    paciente: "/modulos/paciente/portal-paciente.html"
   };
   window.location.href = rutas[rol] || "/index.html";
 }
 
 // ---------------------------------------------------------------------------
-// REGISTRO INTERNO (Modal dentro de usuarios.html gestionado por Administrador)
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// REGISTRO INTERNO (Modal dentro de usuarios.html gestionado por Administrador)
+// REGISTRO DE PACIENTE CON VALIDACIÓN CLÍNICA DE SEGUROS
 // ---------------------------------------------------------------------------
 async function manejarRegistro(event) {
   event.preventDefault();
   ocultarMensaje("mensaje-registro");
 
-  const nombreCompleto = document.getElementById("reg-nombre").value.trim();
+  const nombres = document.getElementById("reg-nombres").value.trim();
+  const apellidos = document.getElementById("reg-apellidos").value.trim();
   const dni = document.getElementById("reg-dni").value.trim();
+  const fechaNacimiento = document.getElementById("reg-fecha-nac").value;
+  const sexo = document.getElementById("reg-sexo").value;
+  const telefono = document.getElementById("reg-telefono").value.trim();
+  const direccion = document.getElementById("reg-direccion").value.trim();
+  let tipoSeguro = document.getElementById("reg-tipo-seguro").value;
+  
   const email = document.getElementById("reg-email").value.trim();
   const password = document.getElementById("reg-password").value;
-  const confirmPassword = document.getElementById("reg-confirm-password").value;
-  const rol = document.getElementById("reg-rol").value;
-  const boldEspecialidad = document.getElementById("reg-especialidad")?.value || null;
   const btn = document.getElementById("btn-registro");
 
-  // Validaciones del formulario
   if (password.length < 6) {
     mostrarMensaje("mensaje-registro", "La contraseña debe tener al menos 6 caracteres.", "error");
     return;
   }
 
-  if (password !== confirmPassword) {
-    mostrarMensaje("mensaje-registro", "Las contraseñas ingresadas no coinciden.", "error");
-    return;
-  }
-
-  // 1. Aquí cambia a estado de carga
   btn.disabled = true;
-  btn.textContent = "Creando cuenta...";
+  btn.textContent = "Guardando datos de filiación...";
 
   try {
-    // 2. Registramos en Supabase Auth guardando el Display Name de inmediato
+    // 1. Creación del usuario en Supabase Auth
     const { data: authData, error: authError } = await supabaseClient.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          displayName: nombreCompleto
-        }
-      }
+      options: { data: { displayName: `${nombres} ${apellidos}` } }
     });
     if (authError) throw authError;
 
-    // 3. Insertamos el perfil en la tabla pública usuarios
-    const { error: perfilError } = await supabaseClient.from("usuarios").insert([{
+    // 2. Establecer variables condicionales para el seguro clínico
+    let tieneSeguro = (tipoSeguro !== "NINGUNO");
+    let seguroVigenteHasta = null;
+
+    // Si el usuario simuló y aceptó afiliarse al SIS en el modal, o seleccionó SIS directamente
+    if (tipoSeguro === "SIS" || window.afiliacionSISAceptada === true) {
+      tieneSeguro = true;
+      tipoSeguro = "SIS";
+      // Añadimos 1 año de vigencia simulada
+      const unAnioMas = new Date();
+      unAnioMas.setFullYear(unAnioMas.getFullYear() + 1);
+      seguroVigenteHasta = unAnioMas.toISOString().split('T')[0];
+    }
+
+    // 3. Inserción directa respetando las columnas de la Base de Datos
+    const { error: pacienteError } = await supabaseClient.from("pacientes").insert([{
       auth_id: authData.user.id,
-      nombre_completo: nombreCompleto,
       dni,
-      correo: email,
-      rol,
-      especialidad: rol === "medico" ? boldEspecialidad : null,
+      nombres,
+      apellidos,
+      fecha_nacimiento: fechaNacimiento || null,
+      sexo,
+      telefono,
+      direccion,
+      tiene_seguro: tieneSeguro,
+      tipo_seguro: tipoSeguro,
+      seguro_vigente_hasta: seguroVigenteHasta
     }]);
 
-    if (perfilError) throw perfilError;
+    if (pacienteError) throw pacienteError;
 
-    // 4. Éxito: Avisamos visualmente en el panel del administrador sin sacarlo del módulo
-    if (typeof mostrarMensajeAdmin === "function") {
-      mostrarMensajeAdmin(`✅ Cuenta para "${nombreCompleto}" creada con éxito.`, "exito");
-    }
-
-    cerrarModalRegistro(); // Cerramos la ventana flotante
-
-    // 5. Refrescamos la tabla de inmediato para que el nuevo usuario aparezca cargado abajo
-    if (typeof cargarUsuarios === "function") {
-      await cargarUsuarios();
-    }
+    alert("🎉 ¡Registro finalizado con éxito! Tus datos se guardaron en la Posta Médica y tu cuenta del portal está lista.");
+    window.location.href = "login.html";
 
   } catch (err) {
     mostrarMensaje("mensaje-registro", traducirErrorAuth(err.message), "error");
   } finally {
-    // 🪄 ¡ESTA ES LA CLAVE DE LA SOLUCIÓN!
-    // Pase lo que pase (éxito o error), el botón vuelve a su estado original listo para otra acción
     btn.disabled = false;
-    btn.textContent = "Crear cuenta";
+    btn.textContent = "Finalizar Registro de Paciente";
   }
 }
 
@@ -147,12 +158,6 @@ function traducirErrorAuth(mensaje) {
   const m = (mensaje || "").toLowerCase();
   if (m.includes("invalid login credentials")) return "Correo o contraseña incorrectos.";
   if (m.includes("already registered")) return "Este correo electrónico ya está registrado.";
-  if (m.includes("password")) return "La contraseña no cumple con los requisitos mínimos de Supabase.";
+  if (m.includes("duplicate key value violates unique constraint")) return "El número de DNI ingresado ya se encuentra registrado.";
   return mensaje || "Ocurrió un error inesperado al procesar la cuenta.";
-}
-
-function alternarCampoEspecialidad() {
-  const rol = document.getElementById("reg-rol").value;
-  const campo = document.getElementById("grupo-especialidad");
-  if (campo) campo.style.display = rol === "medico" ? "block" : "none";
 }

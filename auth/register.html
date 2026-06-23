@@ -3,76 +3,198 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Crear cuenta | SDGP - Villa Victoria Porvenir</title>
+  <title>Registro de Paciente | SDGP</title>
   <link rel="stylesheet" href="../recursos/css/variables.css" />
   <link rel="stylesheet" href="../recursos/css/global.css" />
   <link rel="stylesheet" href="auth.css" />
+  <style>
+    /* Estilos para el modal interactivo de afiliación al SIS */
+    .modal-sis {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: rgba(0, 0, 0, 0.5);
+      align-items: center; 
+      justify-content: center;
+    }
+    .modal-sis-contenido {
+      background-color: #fff; 
+      padding: 24px; 
+      border-radius: 8px; 
+      max-width: 450px; 
+      width: 90%; 
+      text-align: center; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .modal-sis-marca {
+      background-color: #0284c7; 
+      color: white; 
+      padding: 6px 12px; 
+      border-radius: 4px; 
+      font-weight: bold; 
+      display: inline-block; 
+      margin-bottom: 12px;
+    }
+  </style>
 </head>
 <body>
 
   <div class="auth-pantalla">
-    <div class="auth-tarjeta">
+    <div class="auth-tarjeta" style="max-width: 550px;">
       <div class="auth-logo">
         <div class="icono">+</div>
-        <h1>SDGP &mdash; Villa Victoria</h1>
+        <h1>SDGP &mdash; Historial Clínico</h1>
       </div>
-      <p class="auth-subtitulo">Crear cuenta de personal del centro de salud</p>
+      <p class="auth-subtitulo">Ficha de Registro de Paciente Nuevo</p>
 
       <div id="mensaje-registro" class="mensaje"></div>
 
       <form id="form-registro" onsubmit="manejarRegistro(event)">
-        <div class="campo-grupo">
-          <label for="reg-nombre">Nombre completo</label>
-          <input type="text" id="reg-nombre" placeholder="Ej. María Pérez López" required />
+        
+        <div class="fila-campos">
+          <div class="campo-grupo">
+            <label for="reg-nombres">Nombres</label>
+            <input type="text" id="reg-nombres" placeholder="Ej. Juan Carlos" required />
+          </div>
+          <div class="campo-grupo">
+            <label for="reg-apellidos">Apellidos</label>
+            <input type="text" id="reg-apellidos" placeholder="Ej. Quispe Mamani" required />
+          </div>
         </div>
 
         <div class="fila-campos">
           <div class="campo-grupo">
-            <label for="reg-dni">DNI</label>
-            <input type="text" id="reg-dni" maxlength="8" placeholder="12345678" required />
+            <label for="reg-dni">Número de DNI</label>
+            <input type="text" id="reg-dni" maxlength="8" placeholder="8 dígitos" required />
           </div>
           <div class="campo-grupo">
-            <label for="reg-rol">Rol</label>
-            <select id="reg-rol" onchange="alternarCampoEspecialidad()" required>
+            <label for="reg-sexo">Sexo</label>
+            <select id="reg-sexo" required>
               <option value="">Selecciona...</option>
-              <option value="admision">Admisión</option>
-              <option value="enfermeria">Enfermería</option>
-              <option value="medico">Médico</option>
-              <option value="farmacia">Farmacia</option>
-              <option value="administrador">Administrador</option>
-              <option value="encargado">Encargado del Centro</option>
+              <option value="M">Masculino</option>
+              <option value="F">Femenino</option>
             </select>
           </div>
         </div>
 
-        <div class="campo-grupo" id="grupo-especialidad" style="display:none;">
-          <label for="reg-especialidad">Especialidad médica</label>
-          <input type="text" id="reg-especialidad" placeholder="Ej. Medicina General" />
+        <div class="fila-campos">
+          <div class="campo-grupo">
+            <label for="reg-fecha-nac">Fecha de Nacimiento</label>
+            <input type="date" id="reg-fecha-nac" required />
+          </div>
+          <div class="campo-grupo">
+            <label for="reg-telefono">Teléfono / Celular</label>
+            <input type="text" id="reg-telefono" placeholder="Ej. 987654321" required />
+          </div>
         </div>
 
         <div class="campo-grupo">
-          <label for="reg-email">Correo institucional</label>
-          <input type="email" id="reg-email" placeholder="usuario@centrosalud.pe" required />
+          <label for="reg-direccion">Dirección Domiciliaria</label>
+          <input type="text" id="reg-direccion" placeholder="Ej. Av. Larco 123 - Villa Victoria" required />
         </div>
 
         <div class="campo-grupo">
-          <label for="reg-password">Contraseña</label>
-          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required />
+          <label for="reg-tipo-seguro">¿Cuenta con Seguro de Salud actualmente?</label>
+          <select id="reg-tipo-seguro" onchange="evaluarSeguroSeleccionado()" required>
+            <option value="">Selecciona una opción...</option>
+            <option value="SIS">Sí, cuento con SIS</option>
+            <option value="ESSALUD">Sí, cuento con EsSalud</option>
+            <option value="PRIVADO">Sí, cuento con Seguro Privado</option>
+            <option value="NINGUNO">No tengo ningún seguro (Ninguno)</option>
+          </select>
         </div>
 
-        <button type="submit" id="btn-registro" class="btn btn-primario btn-block">
-          Crear cuenta
+        <div class="campo-grupo">
+          <label for="reg-email">Correo electrónico personal</label>
+          <input type="email" id="reg-email" placeholder="paciente@correo.com" required />
+        </div>
+
+        <div class="fila-campos">
+          <div class="campo-grupo">
+            <label for="reg-password">Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required />
+          </div>
+        </div>
+
+        <button type="submit" id="btn-registro" class="btn btn-primario btn-block" style="margin-top: 15px;">
+          Finalizar Registro de Paciente
         </button>
       </form>
 
-      <p class="auth-pie">
-        ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+      <p class="auth-pie" style="text-align: center; margin-top: 20px;">
+        ¿Ya tienes cuenta de paciente? <a href="login.html" style="font-weight:bold; color: var(--color-primario);">Inicia sesión aquí</a>
       </p>
+    </div>
+  </div>
+
+  <!-- SUBPANTALLA / MODAL INTERACTIVO AFILIACIÓN SIS -->
+  <div id="modal-afiliacion-sis" class="modal-sis">
+    <div class="modal-sis-contenido">
+      <div class="modal-sis-marca">Plataforma Integrada SIS</div>
+      <h3>Simulador de Afiliación al Seguro</h3>
+      <p style="font-size: 14px; color: #475569; margin: 12px 0 20px 0; line-height: 1.5;">
+        Hemos detectado que no posees cobertura médica activa. ¿Deseas tramitar tu <strong>Afiliación Gratuita Automática al SIS</strong> utilizando los mismos datos de tu registro para esta posta médica?
+      </p>
+      <div style="display:flex; gap:12px; justify-content: center;">
+        <button type="button" class="btn btn-primario" onclick="aceptarAfiliacionSIS()">Aceptar y Afiliarme</button>
+        <button type="button" class="btn btn-secundario" onclick="cerrarModalSIS()">No, dejar sin seguro</button>
+      </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../recursos/js/supabase-config.js"></script>
   <script src="auth.js"></script>
+  <script>
+    // Variable global temporal para rastrear la simulación de afiliación activa
+    window.afiliacionSISAceptada = false;
+
+    function evaluarSeguroSeleccionado() {
+      const selector = document.getElementById("reg-tipo-seguro");
+      if (selector.value === "NINGUNO") {
+        document.getElementById("modal-afiliacion-sis").style.display = "flex";
+      } else {
+        window.afiliacionSISAceptada = false;
+      }
+    }
+
+    function aceptarAfiliacionSIS() {
+      window.afiliacionSISAceptada = true;
+      const selector = document.getElementById("reg-tipo-seguro");
+      selector.value = "SIS"; // Selecciona automáticamente SIS en el formulario principal
+      cerrarModalSIS();
+      alert("✅ ¡Afiliación Simulada al SIS Procesada! Al terminar el registro tus datos se sincronizarán.");
+    }
+
+    function cerrarModalSIS() {
+      document.getElementById("modal-afiliacion-sis").style.display = "none";
+      
+      const selector = document.getElementById("reg-tipo-seguro");
+      // Si rechazó la afiliación y el selector sigue en "NINGUNO"
+      if (selector.value === "NINGUNO" && !window.afiliacionSISAceptada) {
+        
+        // Alerta estricta de doble confirmación
+        const confirmaRechazo = confirm(
+          "⚠️ ADVERTENCIA CRÍTICA:\n\n" +
+          "Para registrarse en el Portal Web de la Posta Villa Victoria y agendar citas de forma autónoma, es OBLIGATORIO contar con un seguro activo (SIS, EsSalud o Privado).\n\n" +
+          "Si decide continuar SIN SEGURO, el sistema NO LE PERMITIRÁ CREAR SU CUENTA.\n\n" +
+          "¿Desea regresar y aceptar la afiliación gratuita al SIS?"
+        );
+
+        if (confirmaRechazo) {
+          // Reabre el modal de afiliación si el usuario decide corregir
+          document.getElementById("modal-afiliacion-sis").style.display = "flex";
+        } else {
+          // Si insiste en denegar el seguro, se bloquea la selección obligándolo a cambiarla
+          alert("❌ Registro cancelado. No se puede crear un usuario en el sistema sin cobertura médica activa.");
+          selector.value = ""; 
+        }
+      }
+    }
+  </script>
 </body>
 </html>

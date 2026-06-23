@@ -29,8 +29,9 @@
           <a href="agendar-cita.html" class="btn btn-primario">+ Agendar nueva cita</a>
         </div>
 
+        <!-- TABLA 1: CITAS VIGENTES (PROGRAMADAS O CONFIRMADAS) -->
         <div class="tarjeta">
-          <div class="tarjeta-titulo">📅 Mis citas</div>
+          <div class="tarjeta-titulo">📅 Mis citas programadas</div>
           <table class="tabla-datos">
             <thead>
               <tr>
@@ -41,8 +42,26 @@
                 <th>Estado / Acción</th>
               </tr>
             </thead>
-            <tbody id="tabla-mis-citas-body">
+            <tbody id="tabla-mis-citas-activas-body">
               <tr><td colspan="5" class="estado-vacio">Cargando tus citas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- TABLA 2: HISTORIAL CLÍNICO DE ATENCIONES Y CITAS PASADAS/CANCELADAS -->
+        <div class="tarjeta" style="margin-top: 24px;">
+          <div class="tarjeta-titulo">📜 Historial Clínico de Consultas y Citas Pasadas</div>
+          <table class="tabla-datos">
+            <thead>
+              <tr>
+                <th>Fecha / Evento</th>
+                <th>Médico Especialista</th>
+                <th>Diagnóstico / Estado</th>
+                <th>Tratamiento / Receta / Indicaciones u Observación</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-historial-paciente-body">
+              <tr><td colspan="4" class="estado-vacio">Cargando historial clínico...</td></tr>
             </tbody>
           </table>
         </div>

@@ -76,20 +76,23 @@ function redirigirSegunRol(rol) {
 }
 
 // ---------------------------------------------------------------------------
-// REGISTRO DE PACIENTE CON VALIDACIÓN CLÍNICA DE SEGUROS
+// REGISTRO DINÁMICO (PACIENTES Y PERSONAL ADMINISTRATIVO / MÉDICOS)
 // ---------------------------------------------------------------------------
 async function manejarRegistro(event) {
   event.preventDefault();
   ocultarMensaje("mensaje-registro");
 
-  const nombres = document.getElementById("reg-nombres").value.trim();
-  const apellidos = document.getElementById("reg-apellidos").value.trim();
-  const dni = document.getElementById("reg-dni").value.trim();
-  const fechaNacimiento = document.getElementById("reg-fecha-nac").value;
-  const sexo = document.getElementById("reg-sexo").value;
-  const telefono = document.getElementById("reg-telefono").value.trim();
-  const direccion = document.getElementById("reg-direccion").value.trim();
-  let tipoSeguro = document.getElementById("reg-tipo-seguro").value;
+  // --- CAPTURA DE CAMPOS BLINDADA (Si el elemento no existe, se asigna null de forma segura) ---
+  const elNombres = document.getElementById("reg-nombres") || document.getElementById("reg-nombre");
+  const elApellidos = document.getElementById("reg-apellidos");
+  const elDni = document.getElementById("reg-dni");
+  const elFechaNac = document.getElementById("reg-fecha-nac");
+  const elSexo = document.getElementById("reg-sexo");
+  const elTelefono = document.getElementById("reg-telefono");
+  const elDireccion = document.getElementById("reg-direccion");
+  const elTipoSeguro = document.getElementById("reg-tipo-seguro");
+  const elRol = document.getElementById("reg-rol");
+  const elEspecialidad = document.getElementById("reg-especialidad");
   
   const email = document.getElementById("reg-email").value.trim();
   const password = document.getElementById("reg-password").value;
@@ -101,56 +104,91 @@ async function manejarRegistro(event) {
   }
 
   btn.disabled = true;
-  btn.textContent = "Guardando datos de filiación...";
+  btn.textContent = "Guardando datos en el sistema...";
 
   try {
-    // 1. Creación del usuario en Supabase Auth
+    // 1. Identificar de manera automática qué tipo de registro se está procesando
+    const esRegistroDePersonal = (elRol !== null);
+
+    // 2. Creación del usuario en Supabase Auth
+    const nombreCompletoAuth = esRegistroDePersonal 
+      ? elNombres.value.trim() 
+      : `${elNombres.value.trim()} ${(elApellidos ? elApellidos.value.trim() : "")}`;
+
     const { data: authData, error: authError } = await supabaseClient.auth.signUp({
       email,
       password,
-      options: { data: { displayName: `${nombres} ${apellidos}` } }
+      options: { data: { displayName: nombreCompletoAuth } }
     });
     if (authError) throw authError;
 
-    // 2. Establecer variables condicionales para el seguro clínico
-    let tieneSeguro = (tipoSeguro !== "NINGUNO");
-    let seguroVigenteHasta = null;
+    // 3. Bifurcación del guardado según el Formulario de Origen
+    if (esRegistroDePersonal) {
+      // REGISTRO DE PERSONAL (Médicos, Admisión, Enfermería, etc. -> va a la tabla 'usuarios')
+      const { error: usuarioError } = await supabaseClient.from("usuarios").insert([{
+        id: authData.user.id, // Vinculación directa con Auth ID
+        auth_id: authData.user.id, // Mantiene redundancia segura por si se migró la columna
+        dni: elDni ? elDni.value.trim() : null,
+        nombre_completo: nombreCompletoAuth,
+        correo: email,
+        rol: elRol.value,
+        especialidad: elRol.value === "medico" && elEspecialidad ? elEspecialidad.value.trim() : null,
+        activo: true
+      }]);
 
-    // Si el usuario simuló y aceptó afiliarse al SIS en el modal, o seleccionó SIS directamente
-    if (tipoSeguro === "SIS" || window.afiliacionSISAceptada === true) {
-      tieneSeguro = true;
-      tipoSeguro = "SIS";
-      // Añadimos 1 año de vigencia simulada
-      const unAnioMas = new Date();
-      unAnioMas.setFullYear(unAnioMas.getFullYear() + 1);
-      seguroVigenteHasta = unAnioMas.toISOString().split('T')[0];
+      if (usuarioError) throw usuarioError;
+
+      alert(`🎉 Cuenta de personal (${elRol.value}) creada con éxito.`);
+      
+      // Limpiar formulario y cerrar modal de manera segura si la función existe en el contexto global
+      document.getElementById("form-registro")?.reset();
+      if (typeof cerrarModalRegistro === "function") {
+        cerrarModalRegistro();
+      }
+      if (typeof cargarUsuarios === "function") {
+        await cargarUsuarios();
+      }
+
+    } else {
+      // REGISTRO DE PACIENTES NATAL (Público -> va a la tabla 'pacientes')
+      let tipoSeguro = elTipoSeguro ? elTipoSeguro.value : "NINGUNO";
+      let tieneSeguro = (tipoSeguro !== "NINGUNO");
+      let seguroVigenteHasta = null;
+
+      if (tipoSeguro === "SIS" || window.afiliacionSISAceptada === true) {
+        tieneSeguro = true;
+        tipoSeguro = "SIS";
+        const unAnioMas = new Date();
+        unAnioMas.setFullYear(unAnioMas.getFullYear() + 1);
+        seguroVigenteHasta = unAnioMas.toISOString().split('T')[0];
+      }
+
+      const { error: pacienteError } = await supabaseClient.from("pacientes").insert([{
+        auth_id: authData.user.id,
+        dni: elDni ? elDni.value.trim() : null,
+        nombres: elNombres.value.trim(),
+        apellidos: elApellidos ? elApellidos.value.trim() : "",
+        fecha_nacimiento: elFechaNac ? elFechaNac.value || null : null,
+        sexo: elSexo ? elSexo.value : null,
+        telefono: elTelefono ? elTelefono.value.trim() : null,
+        direccion: elDireccion ? elDireccion.value.trim() : null,
+        tiene_seguro: tieneSeguro,
+        tipo_seguro: tipoSeguro,
+        seguro_vigente_hasta: seguroVigenteHasta
+      }]);
+
+      if (pacienteError) throw pacienteError;
+
+      alert("🎉 ¡Registro finalizado con éxito! Tus datos se guardaron en la Posta Médica y tu cuenta del portal está lista.");
+      window.location.href = "login.html";
     }
 
-    // 3. Inserción directa respetando las columnas de la Base de Datos
-    const { error: pacienteError } = await supabaseClient.from("pacientes").insert([{
-      auth_id: authData.user.id,
-      dni,
-      nombres,
-      apellidos,
-      fecha_nacimiento: fechaNacimiento || null,
-      sexo,
-      telefono,
-      direccion,
-      tiene_seguro: tieneSeguro,
-      tipo_seguro: tipoSeguro,
-      seguro_vigente_hasta: seguroVigenteHasta
-    }]);
-
-    if (pacienteError) throw pacienteError;
-
-    alert("🎉 ¡Registro finalizado con éxito! Tus datos se guardaron en la Posta Médica y tu cuenta del portal está lista.");
-    window.location.href = "login.html";
-
   } catch (err) {
+    console.error("Error completo atrapado en Auth:", err);
     mostrarMensaje("mensaje-registro", traducirErrorAuth(err.message), "error");
   } finally {
     btn.disabled = false;
-    btn.textContent = "Finalizar Registro de Paciente";
+    btn.textContent = elRol ? "Crear cuenta" : "Finalizar Registro de Paciente";
   }
 }
 

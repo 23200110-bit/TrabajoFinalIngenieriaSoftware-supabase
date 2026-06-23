@@ -19,6 +19,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (document.getElementById("calendario-semanal-body")) {
     await inicializarAgendas();
   }
+
+  // Activar listeners para el formulario de registro dinámico (CU-09)
+  const formRegistro = document.getElementById("form-registro");
+  if (formRegistro) {
+    formRegistro.addEventListener("submit", manejarRegistro);
+  }
+
+  const selectRol = document.getElementById("reg-rol");
+  if (selectRol) {
+    selectRol.addEventListener("change", alternarCampoEspecialidad);
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -26,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ---------------------------------------------------------------------------
 async function cargarUsuarios() {
   const tbody = document.getElementById("tabla-usuarios-body");
+  if (!tbody) return;
   try {
     const { data: usuarios, error } = await supabaseClient
       .from("usuarios")
@@ -102,6 +114,93 @@ async function eliminarUsuario(usuarioId, nombreCompleto) {
   }
 }
 
+function alternarCampoEspecialidad() {
+  const rol = document.getElementById("reg-rol").value;
+  const campoEsp = document.getElementById("grupo-especialidad");
+  if (!campoEsp) return;
+  
+  if (rol === "medico") {
+    campoEsp.style.display = "block";
+    document.getElementById("reg-especialidad").setAttribute("required", "true");
+  } else {
+    campoEsp.style.display = "none";
+    document.getElementById("reg-especialidad").removeAttribute("required");
+  }
+}
+
+async function manejarRegistro(event) {
+  event.preventDefault();
+  
+  const msgReg = document.getElementById("mensaje-registro");
+  const btnReg = document.getElementById("btn-registro");
+  
+  const nombre = document.getElementById("reg-nombre").value;
+  const dni = document.getElementById("reg-dni").value;
+  const rol = document.getElementById("reg-rol").value;
+  const especialidad = document.getElementById("reg-especialidad").value;
+  const email = document.getElementById("reg-email").value;
+  const password = document.getElementById("reg-password").value;
+  const confirmPassword = document.getElementById("reg-confirm-password").value;
+
+  if (password !== confirmPassword) {
+    msgReg.textContent = "❌ Las contraseñas no coinciden.";
+    msgReg.className = "mensaje visible mensaje-error";
+    return;
+  }
+
+  try {
+    btnReg.disabled = true;
+    btnReg.textContent = "Creando...";
+
+    // 1. Crear el usuario en la autenticación de Supabase (Auth)
+    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          nombre_completo: nombre,
+          rol: rol
+        }
+      }
+    });
+
+    if (authError) throw authError;
+
+    // 2. Insertar el registro extendido en tu tabla personalizada 'usuarios'
+    const { error: dbError } = await supabaseClient
+      .from("usuarios")
+      .insert([{
+        id: authData.user.id,
+        nombre_completo: nombre,
+        dni: dni,
+        correo: email,
+        rol: rol,
+        especialidad: rol === "medico" ? especialidad : null,
+        activo: true
+      }]);
+
+    if (dbError) throw dbError;
+
+    // Éxito completo
+    msgReg.textContent = "✅ Cuenta de personal creada con éxito.";
+    msgReg.className = "mensaje visible mensaje-exito";
+    document.getElementById("form-registro").reset();
+    
+    setTimeout(() => {
+      cerrarModalRegistro();
+      cargarUsuarios();
+    }, 1500);
+
+  } catch (err) {
+    console.error("Error al registrar personal:", err);
+    msgReg.textContent = "❌ Error: " + err.message;
+    msgReg.className = "mensaje visible mensaje-error";
+  } finally {
+    btnReg.disabled = false;
+    btnReg.textContent = "Crear cuenta";
+  }
+}
+
 // ---------------------------------------------------------------------------
 // CU-12: Gestionar Agenda del Personal Médico (Múltiple Selección & Vista Matriz)
 // ---------------------------------------------------------------------------
@@ -112,13 +211,22 @@ async function inicializarAgendas() {
   await cargarSelectEspecialidades();
   await cargarTablaAgendas();
 
-  document.getElementById("form-definir-horario").addEventListener("submit", definirHorario);
+  const formAgenda = document.getElementById("form-definir-horario");
+  if (formAgenda) {
+    formAgenda.addEventListener("submit", definirHorario);
+  }
 }
 
 async function cargarSelectMedicos() {
   const select = document.getElementById("select-medico-agenda");
+  if (!select) return;
   try {
-    const medicos = await citaService.listarMedicos();
+    const { data: medicos, error } = await supabaseClient
+      .from("usuarios")
+      .select("*")
+      .eq("rol", "medico")
+      .eq("activo", true);
+      
     select.innerHTML = medicos
       .map((m) => `<option value="${m.id}">${m.nombre_completo} ${m.especialidad ? "— " + m.especialidad : ""}</option>`)
       .join("");
@@ -129,6 +237,7 @@ async function cargarSelectMedicos() {
 
 async function cargarSelectEspecialidades() {
   const select = document.getElementById("select-especialidad-agenda");
+  if (!select) return;
   try {
     const { data: especialidades } = await supabaseClient.from("especialidades").select("*");
     select.innerHTML = especialidades.map((e) => `<option value="${e.id}">${e.nombre}</option>`).join("");
@@ -161,7 +270,6 @@ async function definirHorario(event) {
   const especialidadId = document.getElementById("select-especialidad-agenda").value;
 
   try {
-    // 1. OBTENER HORARIOS EXISTENTES DEL MÉDICO PARA VALIDAR CONFLICTOS
     const { data: horariosExistentes, error: errorFetch } = await supabaseClient
       .from("horarios_medicos")
       .select("dia_semana, hora_inicio, hora_fin")
@@ -169,7 +277,6 @@ async function definirHorario(event) {
 
     if (errorFetch) throw errorFetch;
 
-    // Helper para convertir "HH:MM" a minutos totales del día
     const aMinutos = (h) => {
       const [horas, minutos] = h.split(':').map(Number);
       return horas * 60 + minutos;
@@ -178,7 +285,6 @@ async function definirHorario(event) {
     const nuevoInicio = aMinutos(horaInicio);
     const nuevoFin = aMinutos(horaFin);
 
-    // 2. COMPROBAR CRUCE DE HORARIOS DÍA POR DÍA
     let diasConConflicto = [];
 
     for (const dia of diasSeleccionados) {
@@ -188,8 +294,6 @@ async function definirHorario(event) {
         const existenteInicio = aMinutos(h.hora_inicio);
         const existenteFin = aMinutos(h.hora_fin);
 
-        // Fórmula matemática clásica de solapamiento de rangos de tiempo:
-        // El nuevo rango inicia antes de que termine el viejo Y termina después de que inicie el viejo
         return nuevoInicio < existenteFin && nuevoFin > existenteInicio;
       });
 
@@ -198,14 +302,12 @@ async function definirHorario(event) {
       }
     }
 
-    // 3. SI HAY CONFLICTOS, DETENER EL FLUJO Y MOSTRAR ALERTA (Requerimiento)
     if (diasConConflicto.length > 0) {
       alert(`🚨 ¡Conflicto de programación detectado!\n\nEl médico seleccionado ya tiene turnos asignados que se cruzan con el rango ${horaInicio} - ${horaFin} los siguientes días:\n• ${diasConConflicto.join("\n• ")}\n\nPor favor, corrija la programación.`);
       mostrarMensajeAdmin("❌ Conflicto de horarios. Por favor revise el calendario.", "error");
       return;
     }
 
-    // 4. SI NO HAY CONFLICTOS, PROCEDER CON LA INSERCIÓN LIMPIA
     for (const dia of diasSeleccionados) {
       await supabaseClient.from("horarios_medicos").insert([{
         medico_id: medicoId,
@@ -286,8 +388,7 @@ async function cargarTablaAgendas() {
 
       const celdaHora = document.createElement("td");
       celdaHora.style.cssText = "padding: 10px; text-align: center; background-color: #f8fafc; font-weight: bold; border-right: 1px solid var(--color-borde); color: var(--color-primario); font-size: 13px;";
-      celdaHora.innerText = block => bloque.etiqueta; // Corrección menor para consistencia
-      celdaHora.innerText = bloque.etiqueta;
+      celdaHora.innerText = bloque.etiqueta; // 👈 ¡CORREGIDO AQUÍ! Ya usa 'bloque' perfectamente.
       fila.appendChild(celdaHora);
 
       for (let dia = 1; dia <= 7; dia++) {
@@ -296,7 +397,7 @@ async function cargarTablaAgendas() {
           
           const parsearAMinutos = (h) => {
             const [horas, minutos] = h.split(':').map(Number);
-            return horas * 60 + minutos; // <-- ¡Fijo en español "minutos"!
+            return horas * 60 + minutes;
           };
 
           const medicoInicio = parsearAMinutos(a.hora_inicio);

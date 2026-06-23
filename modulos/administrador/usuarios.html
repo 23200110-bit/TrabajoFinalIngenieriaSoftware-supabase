@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../../recursos/css/global.css" />
   <link rel="stylesheet" href="../../recursos/css/components.css" />
   <style>
-    /* Estilos estructurales para el Modal Emergente sin romper tus clases globales */
+    /* Estilos estructurales para el Modal Emergente */
     .modal-backdrop {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.5); display: flex; align-items: center;
@@ -70,16 +70,17 @@
     </div>
   </div>
 
+  <!-- MODAL DE REGISTRO -->
   <div id="modal-registro" class="modal-backdrop">
     <div class="modal-ventana">
       <div class="flex-entre" style="margin-bottom: 20px; border-bottom: 1px solid var(--color-borde); padding-bottom: 10px;">
         <h3 style="margin: 0; font-size: 18px; color: var(--color-primario);">Crear Cuenta de Personal</h3>
-        <button onclick="cerrarModalRegistro()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-texto-suave);">&times;</button>
+        <button type="button" onclick="cerrarModalRegistro()" style="background: none; border: none; font-size: 20px; cursor: pointer; color: var(--color-texto-suave);">&times;</button>
       </div>
 
       <div id="mensaje-registro" class="mensaje" style="margin-bottom: 15px;"></div>
 
-      <form id="form-registro" onsubmit="manejarRegistro(event)">
+      <form id="form-registro">
         <div class="campo-grupo">
           <label for="reg-nombre">Nombre completo</label>
           <input type="text" id="reg-nombre" placeholder="Ej. María Pérez López" required />
@@ -92,7 +93,7 @@
           </div>
           <div class="campo-grupo" style="flex: 1;">
             <label for="reg-rol">Rol asignado</label>
-            <select id="reg-rol" onchange="alternarCampoEspecialidad()" required>
+            <select id="reg-rol" required>
               <option value="" disabled selected>Selecciona...</option>
               <option value="admision">Admisión</option>
               <option value="enfermeria">Enfermería</option>
@@ -141,11 +142,11 @@
   <script src="../../auth/auth.js"></script>
 
   <script>
-    // Controladores visuales del modal dentro de la vista de usuarios
     function abrirModalRegistro() {
       document.getElementById("form-registro").reset();
       document.getElementById("grupo-especialidad").style.display = "none";
-      ocultarMensaje("mensaje-registro");
+      const msg = document.getElementById("mensaje-registro");
+      if(msg) { msg.textContent = ""; msg.className = "mensaje"; }
       document.getElementById("modal-registro").classList.add("activo");
     }
     function cerrarModalRegistro() {

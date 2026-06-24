@@ -18,6 +18,8 @@ const MENUS_POR_ROL = {
 
     { texto: "Asignar turno", href: "/modulos/admision/asignar-turno.html", icono: "🎫" },
 
+    { texto: "Pacientes", href: "/modulos/admision/pacientes.html", icono: "👥" }
+
   ],
 
   enfermeria: [

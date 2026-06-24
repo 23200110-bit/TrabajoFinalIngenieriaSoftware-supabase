@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pacientes | SDGP</title>
+
+  <link rel="stylesheet" href="../../recursos/css/variables.css" />
+  <link rel="stylesheet" href="../../recursos/css/global.css" />
+  <link rel="stylesheet" href="../../recursos/css/components.css" />
+</head>
+
+<body>
+
+<div class="contenedor-app">
+
+  <!-- 🔵 SIDEBAR IZQUIERDA -->
+  <div id="sidebar-mount"></div>
+
+  <!-- CONTENIDO DERECHO -->
+  <div style="flex:1; display:flex; flex-direction:column;">
+
+    <!-- NAVBAR -->
+    <div id="navbar-mount"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="contenido-principal">
+
+      <div class="cabecera-pagina">
+        <h1>Listado de Pacientes</h1>
+        <p>Pacientes presenciales y virtuales del sistema</p>
+      </div>
+
+      <div class="tarjeta">
+        <div class="tarjeta-titulo">👥 Pacientes registrados</div>
+
+        <div class="filtro-container">
+
+            <input id="filtro-dni" placeholder="Buscar por DNI" />
+
+            <input id="filtro-apellido" placeholder="Buscar por apellido" />
+
+            <button type="button" id="btn-limpiar" class="btn btn-secundario">
+                Limpiar
+            </button>
+
+        </div>
+
+        <table class="tabla-datos">
+          <thead>
+            <tr>
+              <th>DNI</th>
+              <th>Nombre</th>
+              <th>Origen</th>
+              <th>Estado</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody id="tabla-pacientes">
+            <tr>
+              <td colspan="5" class="estado-vacio">Cargando pacientes...</td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </main>
+
+  </div>
+</div>
+
+<!-- 🔥 SCRIPTS (IMPORTANTE ORDEN) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../../recursos/js/supabase-config.js"></script>
+<script src="../../recursos/js/services/pacienteService.js"></script>
+
+<!-- 🔵 ESTE ES EL QUE TE DIBUJA LA BARRA AZUL -->
+<script src="../paneles-compartidos/layout.js"></script>
+
+<!-- TU LOGICA -->
+<script src="pacientes.js"></script>
+
+</body>
+</html>

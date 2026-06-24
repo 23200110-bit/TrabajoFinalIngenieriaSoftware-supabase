@@ -153,6 +153,7 @@ async function registrarPaciente(event) {
     btn.disabled = false;
     btn.textContent = "Registrar paciente";
   }
+  
 }
 
 // ---------------------------------------------------------------------------
@@ -279,3 +280,5 @@ function ocultarMensajeAdmision() {
   const el = document.getElementById("mensaje-admision");
   if (el) el.classList.remove("visible");
 }
+
+inicializarRegistroPaciente();

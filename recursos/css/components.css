@@ -129,3 +129,28 @@
   background: var(--color-error-fondo);
   color: var(--color-error);
 }
+
+.filtro-container{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+
+.filtro-container input{
+  padding:10px;
+  border:1px solid #d0d7de;
+  border-radius:8px;
+  width:220px;
+  outline:none;
+}
+
+.filtro-container input:focus{
+  border-color:#2563eb;
+  box-shadow:0 0 0 3px rgba(37,99,235,0.15);
+}
+
+.filtro-container button{
+  height:38px;
+}
